@@ -13,7 +13,7 @@ export class TestRunService {
             url: `${process.env.FIORI_QAS}/sap/opu/odata/sap/ZWS_ARCUS_SRV/InformacionTiendasSet?$format=json`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Basic QVJDVVNfQVI6SW5pY2lhbDA5Kg==`,
+                'Authorization': `Basic ${process.env.FIORI_AUTH}`,
             }
         };
         const { data } = await firstValueFrom(
