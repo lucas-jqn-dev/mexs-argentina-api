@@ -12,7 +12,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     CustomerModule, 
     UsersModule, 
     AuthModule,
-    MongooseModule.forRoot(`mongodb+srv://root_mexs:root_mexs@mexs-argentina.hc5ttbc.mongodb.net/`)],
+    MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@mexs-argentina.hc5ttbc.mongodb.net/`)],
   controllers: [],
   providers: [],
 })
