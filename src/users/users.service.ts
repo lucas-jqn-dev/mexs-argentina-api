@@ -1,24 +1,42 @@
 import { Injectable } from '@nestjs/common';
 
-// This should be a real class/interface representing a user entity
-export type User = any;
+import { User } from './interfaces/users.interface'
+import { CreateUserDto } from './dto/create-user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
+import { randomUUID } from "crypto";
+
+// This should be a real class/interface representing a user entity
 @Injectable()
 export class UsersService {
-    private readonly users = [
-        {
-            userId: 1,
-            client_id: 'MEXS_ARG', 
-            client_secret: 'dwucLJZZMEk1REgsFtFhOfvpoQKUS8O6'
-        },
-        {
-            userId: 2,
-            client_id: 'MI_LOCAL', 
-            client_secret: 'iMqR19j3OlVFUht7GchuBMXtWTo7v4xa'
-        },
-    ];
 
-    async findOne(clientId: string): Promise<User | undefined> {
-        return this.users.find(user => user.client_id === clientId);
+    constructor(@InjectModel("Users") private readonly usersModel: Model<User>){}
+
+   async getClients(): Promise<User[]> {
+        const users = await this.usersModel.find()
+        return users;
     }
+
+    async getClient(clientId: string): Promise<any> {
+        const user = await this.usersModel.find({ clientId: clientId }).exec();
+        return user;
+    }
+
+    async createClient(client: CreateUserDto) : Promise<User> {
+
+        const dataUser = {
+            clientId: client.clientId,
+            clientSecret: randomUUID()
+        }
+        
+        const userCreated = new this.usersModel(dataUser);
+        return await userCreated.save(); 
+    }
+    
+    async deleteClient(clientId: string): Promise<User> {
+        const deletedUser = await this.usersModel.findOneAndDelete({ clientId: clientId });
+        return deletedUser;
+    }
+
 }

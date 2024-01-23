@@ -8,8 +8,9 @@ export class AuthService {
   constructor(private usersService: UsersService,  private jwtService: JwtService) {}
 
   async getAccessToken(client_id: string, client_secret: string): Promise<any> {
-    const user = await this.usersService.findOne(client_id);
-    if (user?.client_secret !== client_secret) {
+    
+    const user = await this.usersService.getClient(client_id);    
+    if (user[0].clientSecret != client_secret) { 
       throw new UnauthorizedException();
     }
 

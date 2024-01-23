@@ -1,0 +1,7 @@
+import { Document } from "mongoose";
+
+export interface User extends Document {
+    clientId: string;
+    clientSecret: string;
+    createdAt: Date;
+}
