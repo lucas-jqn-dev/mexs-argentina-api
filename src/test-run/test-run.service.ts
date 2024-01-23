@@ -10,7 +10,7 @@ export class TestRunService {
     
     async getSAPStores() {
         const headersRequest: AxiosRequestConfig = {
-            url: `${process.env.FIORI_QAS}/sap/opu/odata/sap/ZWS_ARCUS_SRV/InformacionTiendasSet?$format=json`,
+            url: `${process.env.FIORI_ENDPOINT}/sap/opu/odata/sap/ZWS_ARCUS_SRV/InformacionTiendasSet?$format=json`,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${process.env.FIORI_AUTH}`,

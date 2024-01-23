@@ -4,11 +4,12 @@ import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { AuthenticationGuard } from 'src/guards/authentication.guard';
 
+@UseGuards(AuthenticationGuard)
 @Controller('customer')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.create(createCustomerDto);
   }
@@ -18,7 +19,6 @@ export class CustomerController {
     return this.customerService.findAll();
   }
   
-  @UseGuards(AuthenticationGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.customerService.findOne(id);
