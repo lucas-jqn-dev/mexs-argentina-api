@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs'; 
+import { GetFormDto } from './dto/get-form.dto';
 
 @Injectable()
 export class TestRunService {
@@ -37,7 +38,7 @@ export class TestRunService {
     async getPreciosHana(top: string){        
        
         const { data } = await firstValueFrom(
-            this.httpService.get(`${process.env.HANA_DEV}/Z_Shopper/ZPreciosWeb.xsodata/Precios?$top=${top}&$format=json`).pipe(
+            this.httpService.get(`${process.env.HANA_ENDPOINT}/Z_Shopper/ZPreciosWeb.xsodata/Precios?$top=${top}&$format=json`).pipe(
                 catchError((error) => {
                     console.log(error)
                     throw `An error happened. Msg: ${JSON.stringify(
@@ -53,6 +54,31 @@ export class TestRunService {
             } catch (e) { }
         });
         return data.d.results
+    }
+
+    async getFormPI(GetFormDto: GetFormDto){               
+        
+        const headersRequest: AxiosRequestConfig = {
+            url: `${process.env.PI_ENDPOINT}/PortalProveedoresCO/ConsultaFormulario`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${process.env.PI_AUTH}`,
+            },
+            data: GetFormDto
+        };
+
+        const { data } = await firstValueFrom(
+            this.httpService.get(headersRequest.url, headersRequest).pipe(
+                catchError((error) => {
+                    console.log(error)
+                    throw `An error happened. Msg: ${JSON.stringify(
+                        error?.response?.data,
+                    )}`;
+                }),
+            ),
+        );
+        
+        return data;
     }
 
 
