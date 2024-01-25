@@ -5,6 +5,7 @@ import { CustomerModule } from './customer/customer.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SapParametersModule } from './sap-parameters/sap-parameters.module';
 
 @Module({
   imports: [TestRunModule, 
@@ -12,7 +13,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     CustomerModule, 
     UsersModule, 
     AuthModule,
-    MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@mexs-argentina.hc5ttbc.mongodb.net/`)],
+    MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@mexs-argentina.hc5ttbc.mongodb.net/`),
+    SapParametersModule],
   controllers: [],
   providers: [],
 })

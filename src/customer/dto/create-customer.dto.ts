@@ -60,11 +60,10 @@ export class CreateCustomerDto {
     Latitud: string
 
     @IsString()
-    Longitud: string
-
-    @IsString()
+    Longitud: string    
 
     //Revisar
+    @IsString()
     IdStcdt: string
 
     @IsString()

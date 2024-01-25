@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { AxiosRequestConfig } from 'axios';
@@ -23,21 +23,21 @@ export class CustomerService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${process.env.FIORI_AUTH}`,
-        'x-csrf-token' : 'Fetch'
+        'x-csrf-token': 'Fetch'
       }
     };
-  
+
     // Logica para obtener el CSRF Token SAP y Cookie SAP
     const res = await firstValueFrom(
       this.httpService.get(headersRequestToken.url, headersRequestToken).pipe(
         catchError((error) => {
-          throw `An error happened. Msg: ${JSON.stringify(
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
             error?.response?.data,
-          )}`;
+          )}`);
         }),
       ),
     );
-    
+
     const CSRFToken = res.headers['x-csrf-token'];
     const CookieSAP = res.headers['set-cookie'][1];
 
@@ -46,31 +46,30 @@ export class CustomerService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${process.env.FIORI_AUTH}`,
-        'X-CSRF-Token' : CSRFToken,
+        'X-CSRF-Token': CSRFToken,
         'Cookie': CookieSAP
       }
     };
 
     const { data } = await lastValueFrom(
       this.httpService.post(headersRequest.url, createCustomerDto, headersRequest).pipe(
-        catchError((error) => { 
-
-          throw `An error happened. Msg: ${JSON.stringify(
+        catchError((error) => {
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
             error?.response?.data,
-          )}`;
+          )}`);
         }),
       ),
     );
 
-    if(data.d.Numcliente){
+    if (data.d.Numcliente) {
       responseApi.Created = true;
       responseApi.SAPClientId = data.d.Numcliente;
       responseApi.FiscalNumber = data.d.Stcd1;
       responseApi.Message = `Cliente ${createCustomerDto.Nombre} ${createCustomerDto.Apellido} creado con SAP ID ${responseApi.SAPClientId}`;
-    }else{
+    } else {
       responseApi.Created = false;
       responseApi.Message = `No se ha creado el cliente ${createCustomerDto.Nombre} ${createCustomerDto.Apellido}`
-    } 
+    }
 
     return responseApi;
   }
@@ -94,9 +93,9 @@ export class CustomerService {
     const { data } = await firstValueFrom(
       this.httpService.get(headersRequest.url, headersRequest).pipe(
         catchError((error) => {
-          throw `An error happened. Msg: ${JSON.stringify(
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
             error?.response?.data,
-          )}`;
+          )}`);
         }),
       ),
     );
