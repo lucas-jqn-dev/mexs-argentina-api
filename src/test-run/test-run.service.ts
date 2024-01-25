@@ -1,8 +1,9 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
-import { catchError, firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, lastValueFrom } from 'rxjs';
 import { GetFormDto } from './dto/get-form.dto';
+import { StockOnlineDto } from './dto/stock-online.dto';
 
 @Injectable()
 export class TestRunService {
@@ -79,6 +80,31 @@ export class TestRunService {
         );
 
         return data;
+    }
+
+    async sendStockOnline(StockOnlineDto: StockOnlineDto) {
+        
+        const headersRequest: AxiosRequestConfig = {
+            url: `${process.env.PI_ENDPOINT}/NCR_AR/StockOnline`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${process.env.PI_AUTH}`,
+            },
+            data: StockOnlineDto
+        };
+
+        const { data } = await lastValueFrom(
+            this.httpService.post(headersRequest.url, headersRequest.data, headersRequest).pipe(
+                catchError((error) => {
+                    throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
+                        error?.response?.data,
+                    )}`);
+                }),
+            ),
+        );
+        
+        return data;
+
     }
 
 
