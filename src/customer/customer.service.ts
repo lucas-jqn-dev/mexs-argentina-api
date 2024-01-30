@@ -19,7 +19,7 @@ export class CustomerService {
     }
 
     const headersRequestToken: AxiosRequestConfig = {
-      url: `${process.env.FIORI_ENDPOINT}/sap/opu/odata/sap/ZWS_DATCUSTCROSS_MEXSAR_SRV/tiendaNCRSet(StoreId='E103')`,
+      url: `${process.env.FIORI_ENDPOINT}ZWS_DATCUSTCROSS_MEXSAR_SRV/tiendaNCRSet(StoreId='E103')`,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${process.env.FIORI_AUTH}`,
@@ -42,7 +42,7 @@ export class CustomerService {
     const CookieSAP = res.headers['set-cookie'][1];
 
     const headersRequest: AxiosRequestConfig = {
-      url: `${process.env.FIORI_ENDPOINT}/sap/opu/odata/sap/ZWS_CLIENTE_SRV/clienteSet`,
+      url: `${process.env.FIORI_ENDPOINT}ZWS_CLIENTE_SRV/clienteSet`,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${process.env.FIORI_AUTH}`,
@@ -84,7 +84,7 @@ export class CustomerService {
     const expand = `?$expand=anticiposxcliente,creditoxcliente,direccionesxcliente,contactosxcliente,mensajexcliente,percepcionesxcliente,mediopagoxcliente`
 
     const headersRequest: AxiosRequestConfig = {
-      url: `${process.env.FIORI_ENDPOINT}/sap/opu/odata/sap/ZWS_CLIENTE_SRV/clienteSet${query}${expand}`,
+      url: `${process.env.FIORI_ENDPOINT}ZWS_CLIENTE_SRV/clienteSet${query}${expand}`,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${process.env.FIORI_AUTH}`,

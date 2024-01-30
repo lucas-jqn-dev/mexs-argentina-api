@@ -11,7 +11,7 @@ export class SapParametersService {
     async getSapSalesOrg(country: string) {
 
         const headersRequest: AxiosRequestConfig = {
-            url: `${process.env.FIORI_ENDPOINT}/sap/opu/odata/sap/ZWS_APIMEXS_AR_SRV/salesOrgSet?$filter= Country eq '${country}'`,
+            url: `${process.env.FIORI_ENDPOINT}ZWS_APIMEXS_AR_SRV/salesOrgSet?$filter= Country eq '${country}'`,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${process.env.FIORI_AUTH}`,
@@ -27,7 +27,7 @@ export class SapParametersService {
                 }),
             ),
         );
- 
+
         if (data.d) {
             delete data.d.__metadata;
 
@@ -46,8 +46,10 @@ export class SapParametersService {
 
     async getUserSapParameters(sapuser: string) {
 
+        const expand = `&$expand=userParameters,sapRoles`
+
         const headersRequest: AxiosRequestConfig = {
-            url: `${process.env.FIORI_ENDPOINT}/sap/opu/odata/sap/ZWS_APIMEXS_AR_SRV/userParametersSet?$filter= SapUser eq '${sapuser}'`,
+            url: `${process.env.FIORI_ENDPOINT}ZWS_APIMEXS_AR_SRV/userInformationSet?$filter= SapUser eq '${sapuser}'${expand}`,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${process.env.FIORI_AUTH}`,
@@ -57,13 +59,19 @@ export class SapParametersService {
         const { data } = await firstValueFrom(
             this.httpService.get(headersRequest.url, headersRequest).pipe(
                 catchError((error) => {
-                    throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
-                        error?.response?.data,
-                    )}`);
+
+                    if (error.response.data && error.response.data.error) {
+                        throw new BadRequestException(error.response.data.error.message.value);
+                    } else {
+                        throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
+                            error?.response?.data,
+                        )}`);
+                    }
+
                 }),
             ),
         );
-        
+
         if (data.d) {
             delete data.d.__metadata;
 
@@ -71,6 +79,18 @@ export class SapParametersService {
                 data.d.results.forEach(function (item, index) {
                     try {
                         delete data.d.results[index].__metadata;
+
+                        if (data.d.results[index].sapRoles.results && data.d.results[index].sapRoles.results.length) {
+                            data.d.results[index].sapRoles.results.forEach(function (item, i1) {
+                                delete data.d.results[index].sapRoles.results[i1].__metadata;
+                            });
+                        }
+
+                        if (data.d.results[index].userParameters.results && data.d.results[index].userParameters.results.length) {
+                            data.d.results[index].userParameters.results.forEach(function (item, i2) {
+                                delete data.d.results[index].userParameters.results[i2].__metadata;
+                            });
+                        }
                     } catch (e) { }
                 });
             }
