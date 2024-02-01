@@ -8,6 +8,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('access_token')
   getAccessToken(@Body() signInDto: Record<string, any>) {
-    return this.authService.getAccessToken(signInDto.clientId, signInDto.clientSecret);
+    return this.authService.getAccessToken(signInDto.clientId, signInDto.clientSecret, signInDto.expirationTime || "30d");
   }
 }

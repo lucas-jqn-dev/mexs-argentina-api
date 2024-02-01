@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private usersService: UsersService,  private jwtService: JwtService) {}
 
-  async getAccessToken(client_id: string, client_secret: string): Promise<any> {
+  async getAccessToken(client_id: string, client_secret: string, expirationTime: string): Promise<any> {
     
     const user = await this.usersService.getClient(client_id);    
     if (user[0].clientSecret != client_secret) { 
@@ -15,8 +15,13 @@ export class AuthService {
     }
 
     const payload = { client_id: client_id, client_secret: client_secret };
+    const access_token = await this.jwtService.signAsync(payload, {secret: client_secret , expiresIn: expirationTime});
+    const decoded = this.jwtService.decode(access_token);     
+    
     return {
-      access_token: await this.jwtService.signAsync(payload, {secret: client_secret , expiresIn: '60d'}),
+      valid_from: new Date(decoded.iat*1000).toLocaleString(),
+      valid_to: new Date(decoded.exp*1000).toLocaleString(),
+      access_token: access_token,
     };
      
   }
