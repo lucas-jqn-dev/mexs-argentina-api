@@ -9,6 +9,10 @@ export const UserSchema = new Schema({
         type: String,
         required: true
     },
+    roles: {
+        type: Array,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

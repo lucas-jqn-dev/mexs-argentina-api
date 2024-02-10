@@ -27,7 +27,8 @@ export class UsersService {
 
         const dataUser = {
             clientId: client.clientId,
-            clientSecret: randomUUID()
+            clientSecret: randomUUID(),
+            roles: client.roles
         }
         
         const userCreated = new this.usersModel(dataUser);
