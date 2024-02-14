@@ -5,14 +5,25 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { AuthenticationGuard } from 'src/guards/authentication.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Roles } from 'src/decorators/roles.decorator';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
+@ApiTags('Manejo Clientes')
 @Controller('customer')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Roles(['WRITE'])
   @Post('create')
+  @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 500, description: 'Server Error.'})
+  @ApiBearerAuth()
+  @ApiBody({
+    type: CreateCustomerDto,
+    description: 'Json structure for user object',
+ })
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.create(createCustomerDto);
   }
@@ -25,6 +36,10 @@ export class CustomerController {
   
   @Roles(['READ'])
   @Get(':id')
+  @ApiResponse({ status: 200, description: 'Returns record data.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 500, description: 'Server Error.'})
   findOne(@Param('id') id: string) {
     return this.customerService.findOne(id);
   }

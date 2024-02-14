@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Clientes API')
 @Controller('users')
 export class UsersController {
 
@@ -18,6 +20,10 @@ export class UsersController {
     }
 
     @Post('create')
+    @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 500, description: 'Server Error.'})
     async create(@Body() createCustomerDto: CreateUserDto) {
         return this.usersService.createClient(createCustomerDto);
     }

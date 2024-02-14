@@ -13,7 +13,6 @@ import { SapParametersModule } from './sap-parameters/sap-parameters.module';
     CustomerModule, 
     UsersModule, 
     AuthModule,
-    // MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@mexs-argentina.hc5ttbc.mongodb.net/`),
     MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@mexs-cluster-qas.nsg4aao.mongodb.net/?retryWrites=true&w=majority`),
     SapParametersModule],
   controllers: [],

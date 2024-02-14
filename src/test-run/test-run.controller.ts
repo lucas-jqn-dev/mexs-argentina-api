@@ -5,8 +5,10 @@ import { GetFormDto } from './dto/get-form.dto';
 import { StockOnlineDto } from './dto/stock-online.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
+@ApiTags('Seccion API PoC')
 @Controller('test-run')
 export class TestRunController {
 
