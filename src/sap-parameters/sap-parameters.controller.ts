@@ -1,9 +1,10 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { SapParametersService } from './sap-parameters.service';
 import { AuthenticationGuard } from 'src/guards/authentication.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Roles } from 'src/decorators/roles.decorator';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetStoresDto } from './dto/get-stores.dto';
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @ApiTags('Parámetros de SAP')
 @ApiBearerAuth()
@@ -13,18 +14,48 @@ export class SapParametersController {
 
   @Roles(['READ'])
   @Get('sales-org/:country')
+  @ApiResponse({ status: 200, description: 'Return data'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 400, description: 'Bad Request.'})
+  @ApiResponse({ status: 500, description: 'Server Error.'})
+  @ApiParam({ name: 'country', description: 'Clave País', example: 'AR'})
   getSapSalesOrg(@Param('country') country: string) {
     return this.sapParametersService.getSapSalesOrg(country);
   }
 
   @Roles(['READ'])
-  @Get('sap-user/:sapuser')
+  @Get('dist-channel')
   @ApiResponse({ status: 200, description: 'Return data'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 400, description: 'Bad Request.'})
+  @ApiResponse({ status: 500, description: 'Server Error.'}) 
+  getSapDistChannels() {
+    return this.sapParametersService.getSapDistChannels();
+  }
+
+  @Roles(['READ'])
+  @Get('stores')
+  @ApiResponse({ status: 200, description: 'Return data'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 400, description: 'Bad Request.'})
+  @ApiResponse({ status: 500, description: 'Server Error.'}) 
+  getSapStores(@Query() GetStoresDto: GetStoresDto) {
+    return this.sapParametersService.getSapStores(GetStoresDto);
+  }
+
+  @Roles(['READ'])
+  @Get('sap-user/:userid')
+  @ApiResponse({ status: 200, description: 'Return data'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 400, description: 'Bad Request.'})
   @ApiResponse({ status: 500, description: 'Server Error.'})
-  getUserSapParameters(@Param('sapuser') sapuser: string) {
-    return this.sapParametersService.getUserSapParameters(sapuser);
+  @ApiParam({ name: 'userid', description: 'Usuario de RED Cencosud'})
+  getUserSapParameters(@Param('userid') userid: string) {
+    return this.sapParametersService.getUserSapParameters(userid);
   }
 
 

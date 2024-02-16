@@ -8,8 +8,9 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
-@ApiTags('Manejo Clientes')
-@Controller('customer')
+@ApiTags('Clientes SAP')
+@ApiBearerAuth()
+@Controller('sap-customer')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
@@ -19,7 +20,6 @@ export class CustomerController {
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
   @ApiResponse({ status: 500, description: 'Server Error.'})
-  @ApiBearerAuth()
   @ApiBody({
     type: CreateCustomerDto,
     description: 'Json structure for user object',
@@ -50,9 +50,9 @@ export class CustomerController {
     return this.customerService.update(+id, updateCustomerDto);
   }
 
-  @Roles(['WRITE'])
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.customerService.remove(+id);
-  }
+  // @Roles(['WRITE'])
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.customerService.remove(+id);
+  // }
 }
