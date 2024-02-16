@@ -14,7 +14,7 @@ async function bootstrap() {
     .setTitle('MEXS Argentina')
     .setDescription('API REST Para Mexs Argentina - MdH')
     .setVersion('1.0') 
-    .addServer('http://localhost:3000/', 'Local environment')
+    .addServer('http://localhost:3000/', 'Local Enviroment - Need nest run')
     .addServer('http://172.23.18.147/', 'Staging') 
     .addBearerAuth()
     .build();
