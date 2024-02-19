@@ -1,14 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { AuthenticationGuard } from 'src/guards/authentication.guard';
+import { AuthorizationGuard } from 'src/guards/authorization.guard';
 
 @ApiTags('Clientes para consumo API')
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
+@ApiBearerAuth()
 @Controller('api-client')
 export class UsersController {
 
     constructor(private readonly usersService: UsersService) { }
 
+    @Roles(['ADMIN'])
     @Get()
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -19,6 +25,7 @@ export class UsersController {
         return this.usersService.getClients();
     }
 
+    @Roles(['ADMIN'])
     @Get(':id')
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -29,6 +36,7 @@ export class UsersController {
         return this.usersService.getClient(clientId);
     }
 
+    @Roles(['ADMIN'])
     @Post('create')
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -39,6 +47,7 @@ export class UsersController {
         return this.usersService.createClient(createCustomerDto);
     }
 
+    @Roles(['ADMIN'])
     @Delete(':id')
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})

@@ -35,9 +35,23 @@ export class UsersService {
         return await userCreated.save(); 
     }
     
-    async deleteClient(clientId: string): Promise<User> {
+    async deleteClient(clientId: string): Promise<any> {
         const deletedUser = await this.usersModel.findOneAndDelete({ clientId: clientId });
-        return deletedUser;
+
+        let response = {};
+        if (deletedUser) {
+            response = {
+                message: `User ${deletedUser.clientId} has been deleted from Mongo DB.`,
+                deleted: true
+            }
+        }else{
+            response = {
+                message: `User ${clientId} has not been found for deletion.`,
+                deleted: false
+            }
+        }
+
+        return response;
     }
 
 }
