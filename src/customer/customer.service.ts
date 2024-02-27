@@ -4,6 +4,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { AxiosRequestConfig } from 'axios';
 import { catchError, firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { SearchSapCustomer } from './entities/customer.entity';
 @Injectable()
 export class CustomerService {
 
@@ -78,9 +79,9 @@ export class CustomerService {
     return `This action returns all customer`;
   }
 
-  async findOne(id: string) {
+  async findBySapId(sapId: string) {
 
-    const query = `(Numcliente='${id}',Vkorg='1000',Vtweg='10',Bukrs='A001')`
+    const query = `(Numcliente='${sapId}',Vkorg='1000',Vtweg='10',Bukrs='A001')`
     const expand = `?$expand=anticiposxcliente,creditoxcliente,direccionesxcliente,contactosxcliente,mensajexcliente,percepcionesxcliente,mediopagoxcliente`
 
     const headersRequest: AxiosRequestConfig = {
@@ -162,11 +163,184 @@ export class CustomerService {
 
   }
 
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
+  update(sapid: string, updateCustomerDto: UpdateCustomerDto) {
+    return `This action updates a #${sapid} customer`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} customer`;
+  async fetchByFiscal(salesOrg: string, fiscalNumber: string) {
+
+    const query = `?$filter=Vkorg eq '${salesOrg}' and Stcd1 eq '${fiscalNumber}'`
+    const expand = `&$expand=mensajexcliente&$format=json&sap-charset=utf-8`
+
+    const headersRequest: AxiosRequestConfig = {
+      url: `${process.env.FIORI_ENDPOINT}ZWS_CLIENTE_SRV/clienteSet${query}${expand}`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${process.env.FIORI_AUTH}`,
+      }
+    };
+
+    const { data } = await firstValueFrom(
+      this.httpService.get(headersRequest.url, headersRequest).pipe(
+        catchError((error) => {
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
+            error?.response?.data,
+          )}`);
+        }),
+      ),
+    );
+
+    delete data.d.__metadata;
+    var responseCustomer: SearchSapCustomer[] = [];
+    if (data.d.results) {
+      data.d.results.forEach(customer => {
+        delete customer.__metadata;
+        const linePush: SearchSapCustomer = {
+          SapId: customer.Numcliente,
+          FirstName: customer.Nombre,
+          LastName: customer.Apellido,
+          FiscalNumber: customer.Stcd1,
+          SalesOrg: customer.Vkorg,
+          DistChannel: customer.Vtweg,
+        }
+
+        responseCustomer.push(linePush);
+      });
+    }
+
+    return responseCustomer;
   }
+
+  async fetchBySapId(salesOrg: string, sapNumber: string) {
+
+    const query = `?$filter=Vkorg eq '${salesOrg}' and Numcliente eq '${sapNumber}'`
+    const expand = `&$expand=mensajexcliente&$format=json&sap-charset=utf-8`
+
+    const headersRequest: AxiosRequestConfig = {
+      url: `${process.env.FIORI_ENDPOINT}ZWS_CLIENTE_SRV/clienteSet${query}${expand}`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${process.env.FIORI_AUTH}`,
+      }
+    };
+
+    const { data } = await firstValueFrom(
+      this.httpService.get(headersRequest.url, headersRequest).pipe(
+        catchError((error) => {
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
+            error?.response?.data,
+          )}`);
+        }),
+      ),
+    );
+
+    delete data.d.__metadata;
+    var responseCustomer: SearchSapCustomer[] = [];
+    if (data.d.results) {
+      data.d.results.forEach(customer => {
+        delete customer.__metadata;
+        const linePush: SearchSapCustomer = {
+          SapId: customer.Numcliente,
+          FirstName: customer.Nombre,
+          LastName: customer.Apellido,
+          FiscalNumber: customer.Stcd1,
+          SalesOrg: customer.Vkorg,
+          DistChannel: customer.Vtweg,
+        }
+
+        responseCustomer.push(linePush);
+      });
+    }
+
+    return responseCustomer;
+  }
+
+  async fetchByName(salesOrg: string, firstName: string) {
+
+    const query = `?$filter=Vkorg eq '${salesOrg}' and Nombre eq '${firstName}'`
+    const expand = `&$expand=mensajexcliente&$format=json&sap-charset=utf-8`
+
+    const headersRequest: AxiosRequestConfig = {
+      url: `${process.env.FIORI_ENDPOINT}ZWS_CLIENTE_SRV/clienteSet${query}${expand}`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${process.env.FIORI_AUTH}`,
+      }
+    };
+
+    const { data } = await firstValueFrom(
+      this.httpService.get(headersRequest.url, headersRequest).pipe(
+        catchError((error) => {
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
+            error?.response?.data,
+          )}`);
+        }),
+      ),
+    );
+
+    delete data.d.__metadata;
+    var responseCustomer: SearchSapCustomer[] = [];
+    if (data.d.results) {
+      data.d.results.forEach(customer => {
+        delete customer.__metadata;
+        const linePush: SearchSapCustomer = {
+          SapId: customer.Numcliente,
+          FirstName: customer.Nombre,
+          LastName: customer.Apellido,
+          FiscalNumber: customer.Stcd1,
+          SalesOrg: customer.Vkorg,
+          DistChannel: customer.Vtweg,
+        }
+
+        responseCustomer.push(linePush);
+      });
+    }
+
+    return responseCustomer;
+  }
+
+  async fetchByLastName(salesOrg: string, lastName: string) {
+
+    const query = `?$filter=Vkorg eq '${salesOrg}' and Apellido eq '${lastName}'`
+    const expand = `&$expand=mensajexcliente&$format=json&sap-charset=utf-8`
+
+    const headersRequest: AxiosRequestConfig = {
+      url: `${process.env.FIORI_ENDPOINT}ZWS_CLIENTE_SRV/clienteSet${query}${expand}`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${process.env.FIORI_AUTH}`,
+      }
+    };
+
+    const { data } = await firstValueFrom(
+      this.httpService.get(headersRequest.url, headersRequest).pipe(
+        catchError((error) => {
+          throw new BadRequestException(`An error happened. Msg: ${JSON.stringify(
+            error?.response?.data,
+          )}`);
+        }),
+      ),
+    );
+
+    delete data.d.__metadata;
+    var responseCustomer: SearchSapCustomer[] = [];
+    if (data.d.results) {
+      data.d.results.forEach(customer => {
+        delete customer.__metadata;
+        const linePush: SearchSapCustomer = {
+          SapId: customer.Numcliente,
+          FirstName: customer.Nombre,
+          LastName: customer.Apellido,
+          FiscalNumber: customer.Stcd1,
+          SalesOrg: customer.Vkorg,
+          DistChannel: customer.Vtweg, 
+        }
+
+        responseCustomer.push(linePush);
+      });
+    }
+
+    return responseCustomer;
+  }
+
 }
